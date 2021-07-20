@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quickstart-node-typescript-api-deployment-$BRANCH
+  namespace: cop-dev
+spec:
+  selector:
+    matchLabels:
+      app: quickstart-node-typescript-api-$BRANCH
+  template:
+    metadata:
+      labels:
+        app: quickstart-node-typescript-api-$BRANCH
+    spec:
+      containers:
+        - name: quickstart-api-$BRANCH
+          image: registry.softdesign-rs.com.br/quickstart/node-typescript-api:$BRANCH
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080

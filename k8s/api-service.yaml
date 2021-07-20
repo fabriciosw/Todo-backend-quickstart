@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: quickstart-node-typescript-api-service-$BRANCH
+  namespace: cop-dev
+spec:
+  selector:
+    app: quickstart-node-typescript-api-$BRANCH
+  type: NodePort
+  ports:
+    - name: server
+      port: 8080
