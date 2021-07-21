@@ -44,10 +44,9 @@ pipeline {
 
     stage('Prepare deploy files') {
       steps {
-        sh 'envsubst "\${BRANCH}" < k8s/api-deployment.yaml > deploy/api-deployment-branch.yaml'
-        sh 'envsubst "\${BRANCH}" < k8s/api-ingress.yaml > deploy/api-ingress-branch.yaml'
-        sh 'envsubst "\${BRANCH}" < k8s/api-service.yaml > deploy/api-service-branch.yaml'
-        sh 'kubectl create -f deploy/'
+        sh 'envsubst "\${BRANCH}" < k8s/api-deployment.yaml > api-deployment-branch.yaml'
+        sh 'envsubst "\${BRANCH}" < k8s/api-ingress.yaml > api-ingress-branch.yaml'
+        sh 'envsubst "\${BRANCH}" < k8s/api-service.yaml > api-service-branch.yaml'
       }
     }
 
