@@ -44,9 +44,13 @@ pipeline {
 
     stage('Prepare deploy files') {
       steps {
-        sh 'envsubst "\${BRANCH}" < k8s/api-deployment.yaml > api-deployment-branch.yaml'
-        sh 'envsubst "\${BRANCH}" < k8s/api-ingress.yaml > api-ingress-branch.yaml'
-        sh 'envsubst "\${BRANCH}" < k8s/api-service.yaml > api-service-branch.yaml'
+        sh '''
+          #!/bin/bash
+          set -e
+          envsubst '${BRANCH}' < k8s/api-deployment.yaml > api-deployment-branch.yaml
+          envsubst '${BRANCH}' < k8s/api-ingress.yaml > api-ingress-branch.yaml
+          envsubst '${BRANCH}' < k8s/api-service.yaml > api-service-branch.yaml
+        '''
       }
     }
 
