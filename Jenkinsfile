@@ -54,6 +54,17 @@ pipeline {
       }
     }
 
+    stage('Undeploy last build') {
+      steps {
+        build(
+          job: 'quickstart-node-typescript-api-undeploy',
+          parameters: [
+            string(name: 'key', value: env.GERRIT_BRANCH)
+          ]
+        )
+      }
+    }
+
     stage('Deploy to Kubernetes') {
       steps {
         sh 'kubectl create -f ./api-service-branch.yaml'
