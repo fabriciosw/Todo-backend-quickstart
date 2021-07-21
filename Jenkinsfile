@@ -41,22 +41,28 @@ pipeline {
     // TODO: outros stages
 
     stage('Build Docker image') {
-      sh "docker build -t quickstart/node-typescript-api:${env.BRANCH} ."
-      sh "docker tag quickstart/node-typescript-api:${env.BRANCH} registry.softdesign-rs.com.br/quickstart/node-typescript-api:${env.BRANCH}"
-      sh "docker push registry.softdesign-rs.com.br/quickstart/node-typescript-api:${env.BRANCH}"
+      steps {
+        sh "docker build -t quickstart/node-typescript-api:${env.BRANCH} ."
+        sh "docker tag quickstart/node-typescript-api:${env.BRANCH} registry.softdesign-rs.com.br/quickstart/node-typescript-api:${env.BRANCH}"
+        sh "docker push registry.softdesign-rs.com.br/quickstart/node-typescript-api:${env.BRANCH}"
+      }
     }
 
     stage('Prepare deploy files') {
-      sh 'envsubst "\${BRANCH}" < k8s/api-deployment.yaml > deploy/api-deployment-branch.yaml'
-      sh 'envsubst "\${BRANCH}" < k8s/api-ingress.yaml > deploy/api-ingress-branch.yaml'
-      sh 'envsubst "\${BRANCH}" < k8s/api-service.yaml > deploy/api-service-branch.yaml'
-      sh 'kubectl create -f deploy/'
+      steps {
+        sh 'envsubst "\${BRANCH}" < k8s/api-deployment.yaml > deploy/api-deployment-branch.yaml'
+        sh 'envsubst "\${BRANCH}" < k8s/api-ingress.yaml > deploy/api-ingress-branch.yaml'
+        sh 'envsubst "\${BRANCH}" < k8s/api-service.yaml > deploy/api-service-branch.yaml'
+        sh 'kubectl create -f deploy/'
+      }
     }
 
     stage('Deploy to Kubernetes') {
-      sh 'kubectl create -f ./api-service-branch.yaml'
-      sh 'kubectl create -f ./api-ingress-branch.yaml'
-      sh 'kubectl create -f ./api-deployment-branch.yaml'
+      steps {
+        sh 'kubectl create -f ./api-service-branch.yaml'
+        sh 'kubectl create -f ./api-ingress-branch.yaml'
+        sh 'kubectl create -f ./api-deployment-branch.yaml'\
+      }
     }
   }
 }
