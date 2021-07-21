@@ -10,7 +10,5 @@ spec:
         paths:
           - path: /
             backend:
-              service:
-                name: quickstart-node-typescript-api-service-$BRANCH
-                port:
-                  number: 8080
+              serviceName: quickstart-node-typescript-api-service-$BRANCH
+              servicePort: 8080
