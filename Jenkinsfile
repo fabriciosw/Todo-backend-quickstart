@@ -25,12 +25,6 @@ pipeline {
         sh 'npm i'
       }
     }
-    stage('Quality Gate') {
-      steps {
-        // sh "npm run lint"
-        // sh "npm run test"
-      }
-    }
 
     stage('Build project') {
       steps {
