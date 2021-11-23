@@ -1,12 +1,13 @@
 FROM node:14.15-alpine
 
-WORKDIR /app
+WORKDIR /usr/app
+
+COPY package*.json yarn*.json ./
+
+RUN npm install --production --silent
 
 COPY . .
 
-RUN npm install
+EXPOSE 3000
 
-EXPOSE 8080
-
-ENTRYPOINT ["npm"]
-CMD ["start"]
+CMD ["npm", "start"]

@@ -1,7 +1,31 @@
-import express from "express";
+import express from 'express';
+import morgan from 'morgan';
+import config, { environments } from './config/config';
+import logger from './config/logger';
+import database from './config/database';
+import routes from './routes';
+import swaggerDocs from './config/swagger';
 
 const app = express();
 
-app.get("*", (_, res) => res.status(200).send({ success: true }));
+app.use(express.json());
 
-app.listen(8080, () => console.log("Server running!"));
+if (config.env !== environments.PRODUCTION) {
+  app.use(morgan('tiny'));
+}
+
+app.listen(config.port, async () => {
+  logger.info(`API rodando em http://${config.publicUrl}:${config.port}`);
+
+  if (config.useDatabase) {
+    await database();
+  }
+
+  routes(app);
+
+  if (config.env !== environments.PRODUCTION) {
+    swaggerDocs(app, config.publicUrl, config.port);
+  }
+});
+
+export default app;

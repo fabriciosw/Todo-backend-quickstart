@@ -1,75 +1,89 @@
 pipeline {
-
   agent {
     label 'kubernetes'
   }
-
   options {
     buildDiscarder(logRotator(numToKeepStr:'10'))
-    timeout(time: 10, unit: 'MINUTES')
+    timeout(time: 15, unit: 'MINUTES')
     ansiColor('xterm')
   }
-
   environment {
     KEY = sh (
-          script: "find_jira_key",
+        script: "find_jira_key",
+        returnStdout: true
+      ).trim()
+    BRANCH="${env.GERRIT_BRANCH}"
+   }
+  stages {
+    stage('generate .env') {
+      steps {
+        withCredentials([file(credentialsId: "quickstart-nodejs-${env.ENV_TYPE}", variable: 'envData')]) {
+          writeFile file: ".env", text: readFile(envData)
+        }
+      }
+    }
+    stage('Build App') {
+      steps {
+        nvm('v14.18'){
+          sh 'node --version'
+          sh 'npx yarn'
+          sh 'npx yarn build'
+        }
+      }
+    }
+    stage('Build Dockerfile') {
+      steps {
+        sh "docker build -t liberum/quickstart-nodejs:$BRANCH ."
+        sh "docker tag liberum/quickstart-nodejs:$BRANCH registry.softdesign-rs.com.br/quickstart/quickstart-nodejs:$BRANCH"
+        sh "docker push registry.softdesign-rs.com.br/quickstart/quickstart-nodejs:$BRANCH"
+      }
+    }
+    stage('Undeploy') {
+      steps {
+        build(job:'quickstart-nodejs-undeploy', parameters:[
+          string(name: 'key', value:"$BRANCH")
+        ])
+      }
+    }
+    stage('Sleep 5s for wait delete') {
+      steps {
+        sh "sleep 5"
+      }
+    }
+    stage('Create kubernetes enviroment') {
+      steps {
+        sh "kubectl apply -f ./k8s/$BRANCH/"
+      }
+    }
+    stage('Wait and get URL\'s') {
+      environment {
+        POD_NAME = sh (
+          script: "kubectl get pods -n liberum --selector=app=quickstart-nodejs-$BRANCH -o=jsonpath='{.items[0].metadata.name}'",
           returnStdout: true
         ).trim()
-    BRANCH="${env.GERRIT_BRANCH}"
-  }
-
-
-  stages {
-    stage('Install dependencies') {
+        APP_URL = sh (
+          script: "kubectl get ingress -n liberum quickstart-nodejs-ingress-$BRANCH -o jsonpath='{.spec.rules[0].host}'",
+          returnStdout: true
+        ).trim()
+      }
       steps {
-        sh 'npm i'
+        sh "kubectl wait --for=condition=ready --timeout=240s -n liberum pod/$POD_NAME"
+        sh 'printf "\033[1;32m Versão disponivel em: $APP_URL  \033[0m $1"'
+        script {
+          env.APP_URL = APP_URL
+        }
       }
     }
-
-    stage('Build project') {
+    stage('Move card and comment') {
       steps {
-        sh "npm run build"
-      }
-    }
-
-    // TODO: outros stages
-
-    stage('Build Docker image') {
-      steps {
-        sh "docker build -t quickstart/node-typescript-api:${env.BRANCH} ."
-        sh "docker tag quickstart/node-typescript-api:${env.BRANCH} registry.softdesign-rs.com.br/quickstart/node-typescript-api:${env.BRANCH}"
-        sh "docker push registry.softdesign-rs.com.br/quickstart/node-typescript-api:${env.BRANCH}"
-      }
-    }
-
-    stage('Prepare deploy files') {
-      steps {
-        sh '''
-          #!/bin/bash
-          set -e
-          envsubst '${BRANCH}' < k8s/api-deployment.yaml > api-deployment-branch.yaml
-          envsubst '${BRANCH}' < k8s/api-ingress.yaml > api-ingress-branch.yaml
-          envsubst '${BRANCH}' < k8s/api-service.yaml > api-service-branch.yaml
-        '''
-      }
-    }
-
-    stage('Undeploy last build') {
-      steps {
-        build(
-          job: 'quickstart-node-typescript-api-undeploy',
-          parameters: [
-            string(name: 'key', value: env.GERRIT_BRANCH)
-          ]
-        )
-      }
-    }
-
-    stage('Deploy to Kubernetes') {
-      steps {
-        sh 'kubectl create -f ./api-service-branch.yaml'
-        sh 'kubectl create -f ./api-ingress-branch.yaml'
-        sh 'kubectl create -f ./api-deployment-branch.yaml'\
+        echo "------------------------------ ${env.APP_URL}"
+        build(job:'devops-transicao-jira-deploy', parameters:[
+          string(name: 'GERRIT_BRANCH', value: "$GERRIT_BRANCH"),
+        ])
+        build(job:'devops-develop-comment', parameters:[
+          string(name: 'key', value:"$KEY"),
+          string(name: 'URL', value:"${env.APP_URL}")
+        ])
       }
     }
   }

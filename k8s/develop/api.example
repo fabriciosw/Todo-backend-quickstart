@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+  namespace: quickstart
+spec:
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api-container
+          image: registry.softdesign-rs.com.br/anexth/api:$BRANCH
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: api-configmap
+            - secretRef:
+                name: api-secret
+          env:
+            - name: ANEXTH_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: username
+            - name: ANEXTH_DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: password
+          volumeMounts:
+            - mountPath: /usr/app/data
+              name: api-data-volume
+      volumes:
+        - name: api-data-volume
+          persistentVolumeClaim:
+            claimName: api-data-pvc
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: api-service
+  namespace: quickstart
+spec:
+  selector:
+    app: api
+  type: NodePort
+  ports:
+    - name: api
+      port: 3000
