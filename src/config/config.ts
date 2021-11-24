@@ -30,6 +30,11 @@ const envVarsSchema = yup
     ACCESS_TOKEN_TTL: yup.string().default('15m'),
     REFRESH_TOKEN_TTL: yup.string().default('1y'),
     JWT_SECRET: yup.string().required('Secret is required'),
+    GOOGLE_APPLICATION_CREDENTIALS: yup.string(),
+    GOOGLE_MAP_API_KEY: yup.string(),
+    MIXPANEL_TOKEN: yup.string(),
+    PAGARME_API_KEY: yup.string(),
+    PAGARME_CRIPTO_KEY: yup.string(),
   })
   .noUnknown();
 
@@ -59,6 +64,12 @@ const config = {
   accessTokenTtl: envVars.ACCESS_TOKEN_TTL,
   refreshTokenTtl: envVars.REFRESH_TOKEN_TTL,
   jwtSecret: envVars.JWT_SECRET,
+  googleMapsKey: envVars.GOOGLE_MAP_API_KEY,
+  mixPanelKey: envVars.MIXPANEL_TOKEN,
+  pagarme: {
+    key: envVars.PAGARME_API_KEY,
+    criptoKey: envVars.PAGARME_CRIPTO_KEY,
+  },
 };
 
 export default config;
