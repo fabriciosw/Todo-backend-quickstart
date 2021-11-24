@@ -5,10 +5,13 @@ import logger from './config/logger';
 import database from './config/database';
 import routes from './routes';
 import swaggerDocs from './config/swagger';
+import deserializeUser from './middlewares/deserializeUser';
 
 const app = express();
 
 app.use(express.json());
+
+app.use(deserializeUser);
 
 if (config.env !== environments.PRODUCTION) {
   app.use(morgan('tiny'));

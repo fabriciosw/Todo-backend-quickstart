@@ -23,26 +23,13 @@ const envVarsSchema = yup
     API_PORT: yup.number().default(3001),
     PUBLIC_URL: yup.string().default('localhost'),
     USE_DATABASE: yup.boolean().default(false),
-    DB_HOST: yup.string().required('DB URL'),
-    DB_USER: yup.string().required('DB User'),
-    DB_PASS: yup.string().required('DB Password'),
+    DB_HOST: yup.string().required('DB url is required'),
+    DB_USER: yup.string().required('DB user is required'),
+    DB_PASS: yup.string().required('DB password is required'),
     SALT_WORK_FACTOR: yup.number().default(10),
     ACCESS_TOKEN_TTL: yup.string().default('15m'),
     REFRESH_TOKEN_TTL: yup.string().default('1y'),
-    PRIVATE_KEY: yup.string().default(''),
-    PUBLIC_KEY: yup.string().default(''),
-    // NODEMAILER_HOST: yup
-    //   .string()
-    //   .required('Host do serviço de envio de e-mails não informado'),
-    // NODEMAILER_PORT: yup
-    //   .number()
-    //   .required('Porta do serviço de envio de e-mails não informada'),
-    // NODEMAILER_USER: yup
-    //   .string()
-    //   .required('Username do serviço de envio de e-mails não informado'),
-    // NODEMAILER_PASSWORD: yup
-    //   .string()
-    //   .required('Password do serviço de envio de e-mails não informado'),
+    JWT_SECRET: yup.string().required('Secret is required'),
   })
   .noUnknown();
 
@@ -71,20 +58,7 @@ const config = {
   saltWorkFactor: envVars.SALT_WORK_FACTOR,
   accessTokenTtl: envVars.ACCESS_TOKEN_TTL,
   refreshTokenTtl: envVars.REFRESH_TOKEN_TTL,
-  privateKey: envVars.PRIVATE_KEY,
-  publicKey: envVars.PUBLIC_KEY,
-  // email: {
-  //   sender: 'noreply@projeto.com.br',
-  //   administration: envVars.EMAIL_ADMINISTRACAO,
-  //   smtp: {
-  //     host: envVars.NODEMAILER_HOST,
-  //     port: envVars.NODEMAILER_PORT,
-  //     auth: {
-  //       user: envVars.NODEMAILER_USER,
-  //       pass: envVars.NODEMAILER_PASSWORD,
-  //     },
-  //   },
-  // },
+  jwtSecret: envVars.JWT_SECRET,
 };
 
 export default config;

@@ -2,6 +2,7 @@ import { Express, Request, Response } from 'express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { version } from '../../package.json';
+import config from './config';
 import logger from './logger';
 
 const options: swaggerJsdoc.Options = {
@@ -11,6 +12,9 @@ const options: swaggerJsdoc.Options = {
       title: 'Quickstart API Docs',
       version,
     },
+    consumes: ['application/json'],
+    produces: ['application/json'],
+    servers: [{ url: `http://localhost:${config.port}` }],
     components: {
       securitySchemas: {
         bearerAuth: {
@@ -20,13 +24,12 @@ const options: swaggerJsdoc.Options = {
         },
       },
     },
-    security: [
-      {
-        bearerAuth: [],
-      },
-    ],
   },
-  apis: ['./src/routes/index.ts', './src/schema/*.ts'],
+  apis: [
+    './src/config/swaggerComponents.yml',
+    './src/routes/**/*.ts',
+    './src/schemas/*.ts',
+  ],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
