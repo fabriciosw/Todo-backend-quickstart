@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: api-container
-          image: registry.softdesign-rs.com.br/anexth/api:$BRANCH
+          image: registry.softdesign-rs.com.br/quickstart/api:$BRANCH
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
@@ -23,17 +23,8 @@ spec:
                 name: api-configmap
             - secretRef:
                 name: api-secret
-          env:
-            - name: ANEXTH_DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: mongo-secret
-                  key: username
-            - name: ANEXTH_DB_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: mongo-secret
-                  key: password
+            - secretRef:
+                name: mongo-secret
           volumeMounts:
             - mountPath: /usr/app/data
               name: api-data-volume
