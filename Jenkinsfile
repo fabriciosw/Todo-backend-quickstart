@@ -26,8 +26,8 @@ pipeline {
       steps {
         nvm('v14.18'){
           sh 'node --version'
-          sh 'npx yarn'
-          sh 'npx yarn build'
+          sh 'npm i'
+          sh 'npm run build'
         }
       }
     }
