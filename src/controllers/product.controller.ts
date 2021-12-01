@@ -17,11 +17,11 @@ export async function createProductHandler(
   req: Request<{}, {}, CreateProductInput['body']>,
   res: Response
 ) {
-  const { _id: userId } = res.locals.user;
+  const { _id: user } = res.locals.user;
 
   const { body } = req;
 
-  const product = await createProduct({ ...body, user: userId });
+  const product = await createProduct({ ...body, user });
 
   res.status(StatusCodes.CREATED).json(product);
 }

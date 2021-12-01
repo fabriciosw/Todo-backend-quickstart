@@ -1,10 +1,17 @@
 import { FilterQuery, QueryOptions, UpdateQuery } from 'mongoose';
+// import { getRepository } from 'typeorm';
+// import ProductEntity from '../database/entities/Product.Entity';
 import ProductModel, {
   ProductDocument,
   ProductInput,
 } from '../models/product.model';
 
 export async function createProduct(input: ProductInput) {
+  // postgres
+  // const repository = getRepository(ProductEntity);
+  // const newProduct = repository.create(input);
+  // await repository.save(newProduct);
+  // return newProduct;
   const result = await ProductModel.create(input);
   return result;
 }

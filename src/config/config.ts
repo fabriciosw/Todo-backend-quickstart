@@ -22,10 +22,9 @@ const envVarsSchema = yup
       .default(environments.DEVELOPMENT),
     API_PORT: yup.number().default(3001),
     PUBLIC_URL: yup.string().default('localhost'),
-    USE_DATABASE: yup.boolean().default(false),
-    DB_HOST: yup.string().required('DB url is required'),
-    DB_USER: yup.string().required('DB user is required'),
-    DB_PASS: yup.string().required('DB password is required'),
+    MONGO_DB_HOST: yup.string(), // .required('MONGO_DB_HOST is required'),
+    MONGO_DB_USER: yup.string(), // .required('MONGO_DB_USER is required'),
+    MONGO_DB_PASSWORD: yup.string(), // .required('MONGO_DB_PASSWORD is required'),
     SALT_WORK_FACTOR: yup.number().default(10),
     ACCESS_TOKEN_TTL: yup.string().default('15m'),
     REFRESH_TOKEN_TTL: yup.string().default('1y'),
@@ -35,6 +34,11 @@ const envVarsSchema = yup
     MIXPANEL_TOKEN: yup.string(),
     PAGARME_API_KEY: yup.string(),
     PAGARME_CRIPTO_KEY: yup.string(),
+    POSTGRES_HOST: yup.string(), // .required('POSTGRES_HOST is required'),
+    POSTGRES_PORT: yup.number().default(5432),
+    POSTGRES_USER: yup.string(), // .required('POSTGRES_USER is required'),
+    POSTGRES_PASSWORD: yup.string(), // .required('POSTGRES_PASSWORD is required'),
+    POSTGRES_DB: yup.string(), // .required('POSTGRES_DB is required'),
   })
   .noUnknown();
 
@@ -51,14 +55,22 @@ const config = {
   env: envVars.NODE_ENV,
   port: envVars.API_PORT,
   publicUrl: envVars.PUBLIC_URL,
-  useDatabase: envVars.USE_DATABASE,
-  database: {
-    url: `${envVars.DB_HOST}${envVars.NODE_ENV === 'test' ? '-test' : ''}`,
+  mongoDb: {
+    url: `${envVars.MONGO_DB_HOST}${
+      envVars.NODE_ENV === 'test' ? '-test' : ''
+    }`,
     options: {
-      user: envVars.DB_USER,
-      pass: envVars.DB_PASS,
+      user: envVars.MONGO_DB_USER,
+      pass: envVars.MONGO_DB_PASSWORD,
       authSource: 'admin',
     },
+  },
+  postgresDb: {
+    host: envVars.POSTGRES_HOST,
+    port: envVars.POSTGRES_PORT,
+    username: envVars.POSTGRES_USER,
+    password: envVars.POSTGRES_PASSWORD,
+    database: envVars.POSTGRES_DB,
   },
   saltWorkFactor: envVars.SALT_WORK_FACTOR,
   accessTokenTtl: envVars.ACCESS_TOKEN_TTL,

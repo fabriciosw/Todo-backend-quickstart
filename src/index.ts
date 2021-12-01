@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import express from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
@@ -26,9 +27,7 @@ if (config.env !== environments.PRODUCTION) {
 app.listen(config.port, async () => {
   logger.info(`API rodando em http://${config.publicUrl}:${config.port}`);
 
-  if (config.useDatabase) {
-    await database();
-  }
+  await database();
 
   routes(app);
 
