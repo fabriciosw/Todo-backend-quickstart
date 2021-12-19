@@ -33,8 +33,8 @@ pipeline {
     }
     stage('Build Dockerfile') {
       steps {
-        sh "docker build -t liberum/quickstart-nodejs:$BRANCH ."
-        sh "docker tag liberum/quickstart-nodejs:$BRANCH registry.softdesign-rs.com.br/quickstart/quickstart-nodejs:$BRANCH"
+        sh "docker build -t quickstart/quickstart-nodejs:$BRANCH ."
+        sh "docker tag quickstart/quickstart-nodejs:$BRANCH registry.softdesign-rs.com.br/quickstart/quickstart-nodejs:$BRANCH"
         sh "docker push registry.softdesign-rs.com.br/quickstart/quickstart-nodejs:$BRANCH"
       }
     }
@@ -58,16 +58,16 @@ pipeline {
     stage('Wait and get URL\'s') {
       environment {
         POD_NAME = sh (
-          script: "kubectl get pods -n liberum --selector=app=quickstart-nodejs-$BRANCH -o=jsonpath='{.items[0].metadata.name}'",
+          script: "kubectl get pods -n quickstart --selector=app=quickstart-nodejs-$BRANCH -o=jsonpath='{.items[0].metadata.name}'",
           returnStdout: true
         ).trim()
         APP_URL = sh (
-          script: "kubectl get ingress -n liberum quickstart-nodejs-ingress-$BRANCH -o jsonpath='{.spec.rules[0].host}'",
+          script: "kubectl get ingress -n quickstart quickstart-nodejs-ingress-$BRANCH -o jsonpath='{.spec.rules[0].host}'",
           returnStdout: true
         ).trim()
       }
       steps {
-        sh "kubectl wait --for=condition=ready --timeout=240s -n liberum pod/$POD_NAME"
+        sh "kubectl wait --for=condition=ready --timeout=240s -n quickstart pod/$POD_NAME"
         sh 'printf "\033[1;32m Versão disponivel em: $APP_URL  \033[0m $1"'
         script {
           env.APP_URL = APP_URL
