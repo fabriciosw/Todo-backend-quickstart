@@ -1,7 +1,9 @@
 import { ConnectionOptions } from 'typeorm';
 import config from '../config/config';
 
-const options: ConnectionOptions = {
+type Options = ConnectionOptions & { seeds: string[]; factories: string[] };
+
+const options: Options = {
   type: 'postgres',
   host: config.postgresDb.host,
   port: config.postgresDb.port,
@@ -13,8 +15,12 @@ const options: ConnectionOptions = {
     entitiesDir: './src/database/entities',
     migrationsDir: './src/database/migrations',
   },
-  entities: [`${__dirname}/entities/**/*.Entity.ts`],
-  migrations: [`${__dirname}/migrations/*.ts`],
+  entities: [`${__dirname}/entities/*{.js,.ts}`],
+  migrations: [`${__dirname}/migrations/*{.js,.ts}`],
+  synchronize: false,
+  logging: false,
+  seeds: ['./src/database/seeds/**/*{.ts,.js}'],
+  factories: ['./src/database/factories/**/*{.ts,.js}'],
 };
 
 export = options;

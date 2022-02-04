@@ -21,8 +21,9 @@
     "alwaysStrict": true,
     "noImplicitReturns": true,
     "skipLibCheck": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "typeRoots": ["./node_modules/@types", "./src/typings"]
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "tests/**/*.ts"],
   "exclude": ["./node_modules/*", "dist"]
 }

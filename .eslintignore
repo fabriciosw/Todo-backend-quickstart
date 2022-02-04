@@ -1,3 +1,5 @@
 dist/
 node_modules/
-src/database/migrations
+jest.config.js
+jest-unit.config.js
+commitlint.config.js
