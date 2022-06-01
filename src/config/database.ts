@@ -6,11 +6,11 @@ import logger from './logger';
 
 async function database() {
   try {
-    if (config.mongoDb.url) {
-      const { url, options } = config.mongoDb;
-      await mongoose.connect(url, options);
-      logger.info('Mongo connected');
-    }
+    // if (config.mongoDb.url) {
+    //   const { url, options } = config.mongoDb;
+    //   await mongoose.connect(url, options);
+    //   logger.info('Mongo connected');
+    // }
     if (config.postgresDb.host) {
       await createConnection(ormConfig);
       logger.info('Postgres connected');
